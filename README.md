@@ -13,6 +13,14 @@ npm run dev
 
 Open the URL printed by Vite (normally `http://127.0.0.1:5173`). For a production build use `npm run build`, then `npm run preview`.
 
+## Deploy to Netlify
+
+The repository's `netlify.toml` sets the build command to `npm run build`, the publish directory to `dist`, and Node.js to 22.12.0. For a Git-connected Netlify site, commit and push this file, then deploy the updated commit. If this app is in a repository subfolder, set Netlify's base directory to that subfolder; otherwise leave the base directory unset.
+
+Publish only the compiled `dist` directory, not the repository root or `public`. The source `index.html` references `/src/main.tsx`, which requires Vite compilation and cannot run directly on a static host. The built HTML instead references compiled JavaScript and CSS under `/assets/`; Vite also copies the favicon and product images into `dist`. Do not attempt to fix raw TypeScript deployment by changing MIME headers.
+
+For a manual drag-and-drop deployment, run `npm run build` locally and upload the resulting `dist` folder. Do not commit `node_modules` or `dist` for Git-based builds.
+
 ## Walk through the demo
 
 1. Open the menu: one page-view event is queued.
