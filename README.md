@@ -37,7 +37,9 @@ Storage is scoped to the exact origin: `localhost`, `127.0.0.1`, or a different 
 
 See [ADOBE-TAGS-SETUP.md](ADOBE-TAGS-SETUP.md). The app queues `window.adobeDataLayer` messages but deliberately includes **no direct Web SDK send calls**, IMS tokens, datastream IDs, or hardcoded Tags library. You configure extensions, data elements, rules, and datastream routing in the Adobe UI.
 
-The data layer works independently of Tags. Locally queued messages are **not evidence of AEP ingestion**. The guide separates the plain-language event contract from Adobe schema mapping and provides the exact **three data elements and five rules** to create. The paste-ready mapper in `adobe-tags\feastly-event-xdm.js` uses the confirmed `_aepsupport` tenant key and belongs in a Tags Custom Code data element, not in the website bundle. The previous `return event.message.xdm;` instruction is obsolete: the website no longer emits an XDM object.
+The data layer works independently of Tags. Locally queued messages are **not evidence of AEP ingestion**. The guide uses individual source data elements, a native Web SDK **Variable** element, and visible **Update variable** schema mappings in each of the five rules. Each rule clears the previous event, populates the visible fields, then sends the variable. The former full-event Custom Code mapper has been removed; do not use it. The website does not emit an XDM object.
+
+One small array-only helper in `adobe-tags\product-items.js` translates the website's product field names to AEP's product-item names. It handles all actual product lines without generating the rest of the event. Page, identity, event type, metrics, order fields, and custom customer mappings remain visible in the Tags UI.
 
 Email is trimmed and lowercased by the website and omitted for guests and sign-out. At the Adobe mapping stage, a native Web SDK Identity Map data element uses a nonempty current-message email as primary; otherwise Web SDK / Edge Network supplies ECID and uses it as primary. No ECID or Adobe identity structure is fabricated in the website message.
 
@@ -48,7 +50,7 @@ Email is trimmed and lowercased by the website and omitted for guests and sign-o
 | `src/catalog.ts` | The three products, price helpers, shared types |
 | `src/store.ts` | Redux state, validated restoration, persistence, action-driven event tracking |
 | `src/analytics.ts` | The five categories and typed, plain-language website data-layer builder |
-| `adobe-tags\feastly-event-xdm.js` | Paste-ready Tags mapping to the confirmed `_aepsupport` schema; not loaded by the storefront |
+| `adobe-tags\product-items.js` | Small product-array-only Tags data element; all other mappings are visible in the rule UI |
 | `src/App.tsx` | Menu, cart, demo sign-in, thank-you receipt, and Shop more |
 | `src/styles.css` | Responsive layout and accessible focus/reduced-motion styles |
 | `.env.example` | Optional Tags library embed URL |
